@@ -22,41 +22,32 @@ app.use(function validateBearerToken(req, res, next) {
     next()
   })
 
-/*const filterByCriteria = (criteria, next, filterResults, query) => {
-    debugger
-    if (criteria[next]){
-        const newFilterResults = filterResults.filter(result => result[criteria[next]] === query[criteria[next]])
-        
-        return filterByCriteria(criteria, next + 1, newFilterResults, query)
-    }
-    return filterResults
-}*/
-
-//The code above is stuff I did with my mentor to condense the iff statements bellow
-//im keeping it here for future reference
-
 app.get('/movies', function handleGetMovies(req, res) {
-    //const response = filterByCriteria(Object.keys(req.query), 0, MOVIES, req.query)
-    //used with the commented code above
+
     let response = MOVIES
-    
+
+    //.search will return 0 if it can find the pattern in the string provided
+    //.search is a regex function created to help identify patters
     if (req.query.genre) {
-        response = response.filter(movie =>
-            movie.genre.toLowerCase() === req.query.genre.toLowerCase()
-            ) 
-        }
+        const lowerCaseGenreQuery = req.query.genre.toLowerCase();
+        response = response.filter(movie => 
+            movie.genre.toLowerCase().search(`${lowerCaseGenreQuery}`) === 0
+        )
+    }
+    
 
     if (req.query.country) {
+        const lowerCaseCountryQuery = req.query.country.toLowerCase();
         response = response.filter(movie =>
-            movie.country.toLowerCase() === req.query.country.toLowerCase()
+            movie.country.toLowerCase().search(`${lowerCaseCountryQuery}`) === 0
             ) 
         }
 
     if (req.query.avg_vote) {
         response = response.filter(movie =>
             Number(movie.avg_vote) >= Number(req.query.avg_vote)
-            ) 
-        }
+        ) 
+    }
 
     res.json(response)
 })
